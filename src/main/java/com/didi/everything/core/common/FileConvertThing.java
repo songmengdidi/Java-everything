@@ -23,9 +23,7 @@ public final class FileConvertThing {
     private static int computeFileDepth(File file){
         int dept = 0;
         String[] segments = file.getAbsolutePath().split("\\\\");
-        dept = segments.length;
-
-        return dept;
+        return segments.length;
     }
 
     private static FileType computeFileType(File file){

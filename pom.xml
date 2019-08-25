@@ -11,8 +11,10 @@
     <packaging>jar</packaging>
     <!--项目名称-->
     <name>java-everything</name>
+
     <!--项目描述-->
-    <description>这是一个很不错的java版everything工具</description>
+    <description>这是一个仿照Everything桌面工具的java版可以进行文件搜索的everything工具</description>
+
     <!--开发者信息-->
     <developers>
         <developer>
@@ -74,6 +76,27 @@
                 </configuration>
             </plugin>
 
+            <!--依赖管理插件-->
+            <plugin>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/lib
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!--打包插件-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -83,15 +106,14 @@
                     <archive>
                         <manifest>
                             <!--配置主类-->
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib</classpathPrefix>
                             <mainClass>com.didi.everything.cmd.JavaEverythingCmdApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
         </plugins>
-
     </build>
-
-
 </project>
 

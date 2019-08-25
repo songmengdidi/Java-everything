@@ -20,16 +20,4 @@ public interface FileScan {
      * @param interceptor
      */
     void interceptor(FileInterceptor interceptor);
-
-
-
-    public static void main(String[] args) {
-        FileScanImpl scan = new FileScanImpl();
-        FileInterceptor printInterceptor = new FilePrintInterceptor();
-        scan.interceptor(printInterceptor);
-
-        FileIndexInterceptor fileIndexInterceptor = new FileIndexInterceptor(new FileIndexDaoImpl(DataSourceFactory.dataSource()));
-        scan.interceptor(fileIndexInterceptor);
-        scan.index("D:\\Drivers");
-    }
 }
