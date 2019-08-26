@@ -1,22 +1,16 @@
 package com.didi.everything.core.index.impl;
 
 import com.didi.everything.config.JavaEverythingConfig;
-import com.didi.everything.core.dao.DataSourceFactory;
-import com.didi.everything.core.dao.impl.FileIndexDaoImpl;
 import com.didi.everything.core.index.FileScan;
 import com.didi.everything.core.interceptor.FileInterceptor;
-import com.didi.everything.core.interceptor.impl.FileIndexInterceptor;
-import com.didi.everything.core.interceptor.impl.FilePrintInterceptor;
-import com.didi.everything.core.model.Thing;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class FileScanImpl implements FileScan {
 
     private JavaEverythingConfig config = JavaEverythingConfig.getInstance();
+
     private LinkedList<FileInterceptor> interceptors = new LinkedList<>();
 
     @Override
@@ -47,5 +41,4 @@ public class FileScanImpl implements FileScan {
     public void interceptor(FileInterceptor interceptor) {
         this.interceptors.add(interceptor);
     }
-
 }

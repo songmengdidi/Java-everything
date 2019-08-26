@@ -2,16 +2,15 @@ package com.didi.everything.core.dao;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.didi.everything.config.JavaEverythingConfig;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.function.Predicate;
-
 
 public class DataSourceFactory {
 
@@ -37,7 +36,7 @@ public class DataSourceFactory {
                     //JDBC规范中关于H2 jdbc:h2:filepath->存储到本地文件
                     //JDBC规范中关于H2 jdbc:h2:~/filepath->存储到当前用户的home目录
                     //JDBC规范中关于H2 jdbc:h2://ip:port/databaseName->存储到服务器
-                    dataSource.setUrl("jdbc:h2:"+JavaEverythingConfig.getInstance().getH2IndexPath());
+                    dataSource.setUrl("jdbc:h2:" + JavaEverythingConfig.getInstance().getH2IndexPath());
                     dataSource.setValidationQuery("select now()");
                 }
             }
@@ -75,7 +74,6 @@ public class DataSourceFactory {
             PreparedStatement statement = connection.prepareStatement(sql);
             //3.3执行SQL语句
             statement.execute();
-
             connection.close();
             statement.close();
 

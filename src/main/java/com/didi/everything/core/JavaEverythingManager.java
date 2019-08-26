@@ -7,9 +7,8 @@ import com.didi.everything.core.dao.FileIndexDao;
 import com.didi.everything.core.dao.impl.FileIndexDaoImpl;
 import com.didi.everything.core.index.FileScan;
 import com.didi.everything.core.index.impl.FileScanImpl;
-import com.didi.everything.core.interceptor.ThingInterceptor;
 import com.didi.everything.core.interceptor.impl.FileIndexInterceptor;
-import com.didi.everything.core.interceptor.impl.ThingCleanInterceptor;
+import com.didi.everything.core.interceptor.impl.ThingClearInterceptor;
 import com.didi.everything.core.model.Condition;
 import com.didi.everything.core.model.Thing;
 import com.didi.everything.core.monitor.FileWatch;
@@ -42,7 +41,7 @@ public class JavaEverythingManager {
     /**
      * 清理删除的文件
      */
-    private ThingCleanInterceptor thingClearInterceptor;
+    private ThingClearInterceptor thingClearInterceptor;
     private Thread backgroundClearThread;
     private AtomicBoolean backgroundClearThreadStatus = new AtomicBoolean(false);
 
@@ -68,7 +67,7 @@ public class JavaEverythingManager {
         //真正发布代码时是不需要的
         //this.fileScan.interceptor(new FilePrintInterceptor());
         this.fileScan.interceptor(new FileIndexInterceptor(fileIndexDao));
-        this.thingClearInterceptor = new ThingCleanInterceptor(fileIndexDao);
+        this.thingClearInterceptor = new ThingClearInterceptor(fileIndexDao);
         this.backgroundClearThread = new Thread(this.thingClearInterceptor);
         this.backgroundClearThread.setName("Thread-Thing-Clear");
         this.backgroundClearThread.setDaemon(true);
@@ -127,8 +126,7 @@ public class JavaEverythingManager {
 
                 @Override
                 public Thread newThread(Runnable r) {
-                    Thread
-                            thread = new Thread(r);
+                    Thread thread = new Thread(r);
                     thread.setName("Thread-Scan-" + threadId.getAndIncrement());
                     return thread;
                 }
@@ -139,13 +137,10 @@ public class JavaEverythingManager {
 
         System.out.println("Build index start ...");
         for(final String path : directories){
-            this.executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    JavaEverythingManager.this.fileScan.index(path);
-                    //当前任务完成，值-1；
-                    countDownLatch.countDown();
-                }
+            this.executorService.submit(() -> {
+                JavaEverythingManager.this.fileScan.index(path);
+                //当前任务完成，值-1；
+                countDownLatch.countDown();
             });
         }
 
@@ -165,7 +160,7 @@ public class JavaEverythingManager {
         if(this.backgroundClearThreadStatus.compareAndSet(false,true)){
             this.backgroundClearThread.start();
         }else{
-            System.out.println("Can't repeat stsrt BackgroundClearThread");
+            System.out.println("Can't repeat start BackgroundClearThread");
         }
     }
 
@@ -181,8 +176,8 @@ public class JavaEverythingManager {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                fileWatch.start();
                 System.out.println("文件系统监控启动");
+                fileWatch.start();
             }
         }).start();
     }

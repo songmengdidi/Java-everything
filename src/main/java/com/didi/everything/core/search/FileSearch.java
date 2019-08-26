@@ -1,10 +1,7 @@
 package com.didi.everything.core.search;
 
-import com.didi.everything.core.dao.DataSourceFactory;
-import com.didi.everything.core.dao.impl.FileIndexDaoImpl;
 import com.didi.everything.core.model.Condition;
 import com.didi.everything.core.model.Thing;
-import com.didi.everything.core.search.impl.FileSearchImpl;
 
 import java.util.List;
 

@@ -7,12 +7,12 @@ import com.didi.everything.core.model.Thing;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class ThingCleanInterceptor implements ThingInterceptor,Runnable {
+public class ThingClearInterceptor implements ThingInterceptor,Runnable {
     private Queue<Thing> queue = new ArrayBlockingQueue<>(1024);
 
     private final FileIndexDao fileIndexDao;
 
-    public ThingCleanInterceptor(FileIndexDao fileIndexDao) {
+    public ThingClearInterceptor(FileIndexDao fileIndexDao) {
         this.fileIndexDao = fileIndexDao;
     }
 

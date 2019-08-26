@@ -52,14 +52,12 @@ public class JavaEverythingCmdApp {
                 }
             }
 
-            String deptOrderByAsc = "deptOrderByAsc=";
+            String deptOrderByAsc = "--deptOrderByAsc=";
             if(param.startsWith(deptOrderByAsc)){
                 //--deptOrderByAsc=value
                 int index = param.indexOf("=");
-                if(index < deptOrderByAsc.length() - 1){
-                    String deptOrderByAscStr = param.substring(index + 1);
-                    config.setDeptOrderAsc(Boolean.parseBoolean(deptOrderByAscStr));
-                }
+                String deptOrderByAscStr = param.substring(index + 1);
+                config.setDeptOrderAsc(Boolean.parseBoolean(deptOrderByAscStr));
             }
 
             String includePathParam = "--includePath=";
@@ -80,7 +78,6 @@ public class JavaEverythingCmdApp {
             if(param.startsWith(excludePathParam)){
                 //--excludePath=values
                 int index = param.indexOf("=");
-
                 String excludePathStr = param.substring(index + 1);
                 String[] excludePaths = excludePathStr.split(";");
                 config.getExcludePath().clear();
@@ -142,7 +139,7 @@ public class JavaEverythingCmdApp {
             System.out.println(thing.getPath());
         }
     }
-    private static void index(final JavaEverythingManager manager){
+    private static void index(JavaEverythingManager manager){
         //统一调度器中的index
         new Thread(manager::buildIndex).start();
     }

@@ -1,6 +1,5 @@
 package com.didi.everything.core.dao.impl;
 
-import com.didi.everything.core.dao.DataSourceFactory;
 import com.didi.everything.core.dao.FileIndexDao;
 import com.didi.everything.core.model.Condition;
 import com.didi.everything.core.model.FileType;
@@ -25,7 +24,6 @@ public class FileIndexDaoImpl implements FileIndexDao {
     public void insert(Thing thing) {
         Connection connection = null;
         PreparedStatement statement = null;
-
         try{
             //1.获取数据库连接
             connection = dataSource.getConnection();
@@ -52,7 +50,6 @@ public class FileIndexDaoImpl implements FileIndexDao {
     public void delete(Thing thing) {
         Connection connection = null;
         PreparedStatement statement = null;
-
         try{
             //1.获取数据库连接
             connection = dataSource.getConnection();
@@ -63,7 +60,6 @@ public class FileIndexDaoImpl implements FileIndexDao {
             //4.设置参数
             //5.执行命令
             statement.executeUpdate();
-
         }catch(SQLException e){
             e.printStackTrace();
         }finally {
@@ -101,11 +97,16 @@ public class FileIndexDaoImpl implements FileIndexDao {
             }
 
             //limit,order
-            sqlBuilder.append(" order by depth ")
-                    .append(condition.getOrderByAsc() ? "asc":"desc")
-                    .append(" limit ")
-                    .append(condition.getLimit())
-                    .append(" offset 0 ");
+            if(condition.getOrderByAsc() != null){
+                sqlBuilder.append(" order by depth ")
+                        .append(condition.getOrderByAsc() ? "asc" : "desc");
+            }
+            if(condition.getLimit() != null){
+                sqlBuilder.append(" limit ")
+                        .append(condition.getLimit())
+                        .append(" offset 0 ");
+            }
+
             System.out.println(sqlBuilder.toString());
 
             //3.准备命令
@@ -159,26 +160,4 @@ public class FileIndexDaoImpl implements FileIndexDao {
             }
         }
     }
-
-/*
-    public static void main(String[] args) {
-        FileIndexDao fileIndexDao = new FileIndexDaoImpl(DataSourceFactory.dataSource());
-        Thing thing = new Thing();
-        thing.setName("简历2.ppt");
-        thing.setPath("E:\\a\\test\\简历2.ppt");
-        thing.setDepth(3);
-        thing.setFileType(FileType.DOC);
-        //fileIndexDao.insert(thing);
-
-        Condition condition = new Condition();
-        condition.setName("简历");
-        condition.setLimit(2);
-        condition.setOrderByAsc(true);
-        condition.setFileType("IMG");
-        List<Thing> things = fileIndexDao.search(condition);
-        for(Thing t:things){
-            System.out.println(t);
-        }
-
-    }*/
 }

@@ -10,7 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
+
 
 @Getter
 @ToString
@@ -46,7 +46,6 @@ public class JavaEverythingConfig {
     private String h2IndexPath = System.getProperty("user.dir") + File.separator + "java_everything";
 
     private JavaEverythingConfig(){
-
     }
 
     private void initDefaultPathsConfig(){
@@ -80,6 +79,4 @@ public class JavaEverythingConfig {
         }
         return config;
     }
-
-
 }

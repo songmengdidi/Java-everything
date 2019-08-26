@@ -16,7 +16,7 @@ public enum FileType {
     /**
      * 对应的文件类型的扩展名集合
      */
-    private Set<String> extend = new HashSet<String>();
+    private Set<String> extend = new HashSet<>();
     FileType(String... extend){
         this.extend.addAll(Arrays.asList(extend));
     }
@@ -44,12 +44,4 @@ public enum FileType {
         }
         return FileType.OTHER;
     }
-
-    /*public static void main(String[] args) {
-        System.out.println(FileType.lookup("png"));
-        System.out.println(FileType.lookup("ppt"));
-        System.out.println(FileType.lookup("java"));
-    }*/
-
-
 }

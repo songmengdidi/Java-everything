@@ -21,7 +21,6 @@ public final class FileConvertThing {
     }
 
     private static int computeFileDepth(File file){
-        int dept = 0;
         String[] segments = file.getAbsolutePath().split("\\\\");
         return segments.length;
     }
@@ -31,13 +30,12 @@ public final class FileConvertThing {
             return FileType.OTHER;
         }
         String fileName = file.getName();
-        int index = file.getName().lastIndexOf(".");
+        int index = fileName.lastIndexOf(".");
         if(index != -1 && index < fileName.length() - 1){
-            String extend = file.getName().substring(index + 1);
+            String extend = fileName.substring(index + 1);
             return FileType.lookup(extend);
         }else{
             return FileType.OTHER;
         }
     }
-
 }
