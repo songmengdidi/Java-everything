@@ -1,6 +1,8 @@
 package com.didi.everything.config;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.File;
 import java.nio.file.FileSystem;
@@ -11,6 +13,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 @Getter
+@ToString
 public class JavaEverythingConfig {
     private static volatile JavaEverythingConfig config;
 
@@ -24,7 +27,18 @@ public class JavaEverythingConfig {
      */
     private Set<String> excludePath = new HashSet<>();
 
-    //TODO可配置参数
+    /**
+     * 检索最大的返回值数量
+     */
+    @Setter
+    private Integer maxReturn = 30;
+
+    /**
+     * 深度排序的规则，默认升序
+     * order by dept asc limit 30 offset 0
+     */
+    @Setter
+    private Boolean deptOrderAsc = true;
 
     /**
      * H2数据库文件路径
@@ -32,7 +46,7 @@ public class JavaEverythingConfig {
     private String h2IndexPath = System.getProperty("user.dir") + File.separator + "java_everything";
 
     private JavaEverythingConfig(){
-        //this.initDefaultPathsConfig();
+
     }
 
     private void initDefaultPathsConfig(){

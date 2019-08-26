@@ -1,6 +1,7 @@
 package com.didi.everything.core;
 
 import com.didi.everything.config.JavaEverythingConfig;
+import com.didi.everything.core.common.HandlePath;
 import com.didi.everything.core.dao.DataSourceFactory;
 import com.didi.everything.core.dao.FileIndexDao;
 import com.didi.everything.core.dao.impl.FileIndexDaoImpl;
@@ -11,6 +12,8 @@ import com.didi.everything.core.interceptor.impl.FileIndexInterceptor;
 import com.didi.everything.core.interceptor.impl.ThingCleanInterceptor;
 import com.didi.everything.core.model.Condition;
 import com.didi.everything.core.model.Thing;
+import com.didi.everything.core.monitor.FileWatch;
+import com.didi.everything.core.monitor.impl.FileWatchImpl;
 import com.didi.everything.core.search.FileSearch;
 import com.didi.everything.core.search.impl.FileSearchImpl;
 
@@ -43,6 +46,11 @@ public class JavaEverythingManager {
     private Thread backgroundClearThread;
     private AtomicBoolean backgroundClearThreadStatus = new AtomicBoolean(false);
 
+    /**
+     * 文件监控
+     */
+    private FileWatch fileWatch;
+
     private JavaEverythingManager(){
         this.initComponent();
     }
@@ -51,8 +59,7 @@ public class JavaEverythingManager {
         //数据源对象
         DataSource dataSource = DataSourceFactory.dataSource();
 
-        //检查数据库
-        checkDatabase();
+        initOrResetDatabase();
 
         //业务层对象
         FileIndexDao fileIndexDao = new FileIndexDaoImpl(dataSource);
@@ -65,14 +72,14 @@ public class JavaEverythingManager {
         this.backgroundClearThread = new Thread(this.thingClearInterceptor);
         this.backgroundClearThread.setName("Thread-Thing-Clear");
         this.backgroundClearThread.setDaemon(true);
+
+        //文件监控对象
+        this.fileWatch = new FileWatchImpl(fileIndexDao);
+
     }
 
-    private void checkDatabase() {
-        String fileName = JavaEverythingConfig.getInstance().getH2IndexPath() + ".mv.db";
-        File dbFile = new File(fileName);
-        if(dbFile.isFile() && !dbFile.exists()){
-            DataSourceFactory.initDatabase();
-        }
+    public void initOrResetDatabase(){
+        DataSourceFactory.initDatabase();
     }
 
     public static JavaEverythingManager getInstance(){
@@ -111,6 +118,7 @@ public class JavaEverythingManager {
      * 索引
      */
     public void buildIndex(){
+        initOrResetDatabase();
         Set<String> directories = JavaEverythingConfig.getInstance().getIncludePath();
 
         if(this.executorService == null){
@@ -159,5 +167,23 @@ public class JavaEverythingManager {
         }else{
             System.out.println("Can't repeat stsrt BackgroundClearThread");
         }
+    }
+
+    /**
+     * 启动文件系统监听
+     */
+    public void startFileSystemMonitor(){
+        JavaEverythingConfig config = JavaEverythingConfig.getInstance();
+        HandlePath handlePath = new HandlePath();
+        handlePath.setIncludePath(config.getIncludePath());
+        handlePath.setExcludePath(config.getExcludePath());
+        this.fileWatch.monitor(handlePath);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                fileWatch.start();
+                System.out.println("文件系统监控启动");
+            }
+        }).start();
     }
 }

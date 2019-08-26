@@ -1,5 +1,6 @@
 package com.didi.everything.cmd;
 
+import com.didi.everything.config.JavaEverythingConfig;
 import com.didi.everything.core.JavaEverythingManager;
 import com.didi.everything.core.model.Condition;
 import com.didi.everything.core.model.Thing;
@@ -13,6 +14,9 @@ public class JavaEverythingCmdApp {
 
     public static void main(String[] args) {
 
+        //解析参数
+        parseParams(args);
+
         //欢迎
         welcome();
 
@@ -22,9 +26,71 @@ public class JavaEverythingCmdApp {
         //启动后台清理线程
         manager.startBackgroundClearThread();
 
+        //启动监控
+        manager.startFileSystemMonitor();
+
         //交互式
         interactive(manager);
     }
+
+    private static void parseParams(String[] args) {
+        JavaEverythingConfig config = JavaEverythingConfig.getInstance();
+        /**
+         * 如果用户设置的参数格式不对，使用默认值即可
+         */
+        for(String param : args){
+            String maxReturnParam = "--maxReturn=";
+            if(param.startsWith(maxReturnParam)){
+                //--maxReturn=value
+                int index = param.indexOf("=");
+                String maxReturnStr = param.substring(index + 1);
+                try{
+                    int maxReturn = Integer.parseInt(maxReturnStr);
+                    config.setMaxReturn(maxReturn);
+                }catch(NumberFormatException e){
+                    //如果用户设置的参数格式不对，使用默认值即可
+                }
+            }
+
+            String deptOrderByAsc = "deptOrderByAsc=";
+            if(param.startsWith(deptOrderByAsc)){
+                //--deptOrderByAsc=value
+                int index = param.indexOf("=");
+                if(index < deptOrderByAsc.length() - 1){
+                    String deptOrderByAscStr = param.substring(index + 1);
+                    config.setDeptOrderAsc(Boolean.parseBoolean(deptOrderByAscStr));
+                }
+            }
+
+            String includePathParam = "--includePath=";
+            if(param.startsWith(includePathParam)){
+                //--includePath=values
+                int index = param.indexOf("=");
+                String includePathStr = param.substring(index + 1);
+                String[] includePaths = includePathStr.split(";");
+                if(includePaths.length > 0){
+                    config.getIncludePath().clear();
+                }
+                for(String p : includePaths){
+                    config.getIncludePath().add(p);
+                }
+            }
+
+            String excludePathParam = "--excludePath=";
+            if(param.startsWith(excludePathParam)){
+                //--excludePath=values
+                int index = param.indexOf("=");
+
+                String excludePathStr = param.substring(index + 1);
+                String[] excludePaths = excludePathStr.split(";");
+                config.getExcludePath().clear();
+                for(String p : excludePaths){
+                    config.getExcludePath().add(p);
+                }
+            }
+        }
+    }
+
     private static void interactive(JavaEverythingManager manager){
         while(true){
             System.out.println("everything >>");
@@ -68,6 +134,9 @@ public class JavaEverythingCmdApp {
     }
     private static void search(JavaEverythingManager manager,Condition condition){
 
+        condition.setLimit(JavaEverythingConfig.getInstance().getMaxReturn());
+        condition.setOrderByAsc(JavaEverythingConfig.getInstance().getDeptOrderAsc());
+
         List<Thing> thingList = manager.search(condition);
         for(Thing thing : thingList){
             System.out.println(thing.getPath());
@@ -82,6 +151,7 @@ public class JavaEverythingCmdApp {
         System.exit(0);
     }
     private static  void welcome(){
+
         System.out.println("欢迎使用，Java Everything");
     }
     private static void help(){

@@ -2,12 +2,15 @@ package com.didi.everything.core.dao;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.didi.everything.config.JavaEverythingConfig;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.function.Predicate;
 
 
 public class DataSourceFactory {
@@ -35,6 +38,7 @@ public class DataSourceFactory {
                     //JDBC规范中关于H2 jdbc:h2:~/filepath->存储到当前用户的home目录
                     //JDBC规范中关于H2 jdbc:h2://ip:port/databaseName->存储到服务器
                     dataSource.setUrl("jdbc:h2:"+JavaEverythingConfig.getInstance().getH2IndexPath());
+                    dataSource.setValidationQuery("select now()");
                 }
             }
         }
@@ -78,5 +82,25 @@ public class DataSourceFactory {
         }catch(IOException | SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args){
+        /*try(InputStream in = DataSourceFactory.class
+                .getClassLoader().getResourceAsStream("java_everything" + ".sql");){
+
+            //String sql = IOUtils.toString(in);
+            //System.out.println(sql);
+            IOUtils.readLines(in)
+                    .stream()
+                    .filter(new Predicate<String>() {
+                        @Override
+                        public boolean test(String line) {
+                            return !line.startsWith("--");
+                        }
+                    })
+                    .forEach(line -> System.out.println(line));
+        }catch(IOException e){
+        }*/
+
     }
 }
