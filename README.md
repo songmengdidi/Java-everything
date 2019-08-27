@@ -1,1 +1,4 @@
-这是一个很不错的java版everything工具
+简介：
+这是一个很不错的java版everything工具，仿照Everything桌面工具，基于Java语言开发的命令行文件搜索工具。
+背景：
+在Windows命令行下需要查询一些文件，所以DIY开发一个命令行工具，用来实现Windows命令行中搜索文件
